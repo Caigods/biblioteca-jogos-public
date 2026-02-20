@@ -29,21 +29,21 @@ public class Jogo {
     private String genero;
 
     @Min(value = 1958, message = "Ano de lançamento deve ser maior que 1958")
-    @Column(name = "ano de lancamento")
+    @Column(name = "ano_lancamento")
     private Integer anoDeLancamento;
 
     @NotNull(message = "Status não pode estar vazio")
     @Enumerated(EnumType.STRING)
-    @Column(name = "status de jogo")
+    @Column(name = "status_jogo")
     private StatusJogo status;
 
     @Max(value = 10, message = "Nota não pode ser maior que 10")
     @Min(value = 0, message = "Nota não pode ser negativa")
-    @Column(name = "nota pessoal")
+    @Column(name = "nota_pessoal")
     private Double notaPessoal = 0.0;
 
     @Min(value = 0, message = "Horas jogadas não pode ser negativa")
-    @Column(name = "horas jogadas")
+    @Column(name = "horas_jogadas")
     private Double horasJogadas;
 
 

@@ -28,29 +28,50 @@ public class JogoController {
     }
 
 
-//LISTAS------------------------------------------------------------------------------------------------
+    //READ------------------------------------------------------------------------------------------------
     //LISTAR TODOS OS JOGOS
     @GetMapping
-    public ResponseEntity<List<Jogo>> listarJogos (){
+    public ResponseEntity<List<Jogo>> listarJogos() {
         return ResponseEntity.ok(jogoService.listaJogos());
     }
-//LISTAR QUANTIDADE DE JOGOS CADASTRADOS
+
+    //LISTAR QUANTIDADE DE JOGOS CADASTRADOS
     @GetMapping("/quantidade/total")
-    public ResponseEntity<Long> listarQtdJogos (){
+    public ResponseEntity<Long> listarQtdJogos() {
         return ResponseEntity.ok(jogoService.listarQtdJogos());
     }
-//LISTAR QUANTIDADE DE JOGOS POR PLATAFORMA
+
+    //LISTAR QUANTIDADE DE JOGOS POR PLATAFORMA
     @GetMapping("/quantidade/plataforma")
-    public ResponseEntity<Long> listarQtdJogosPorPlataforma (@RequestParam @Valid PlataformaJogo plataformas){
+    public ResponseEntity<Long> listarQtdJogosPorPlataforma(@RequestParam @Valid PlataformaJogo plataformas) {
         return ResponseEntity.ok(jogoService.listarQtdPorPlataforma(plataformas));
     }
+
     //LISTAR NOTA MAIOR QUE
     @GetMapping("/nota_pessoal")
-    public ResponseEntity<List<Jogo>> listarNotaPessalMaiorQue (@RequestParam @Valid Double notaPessoal){
+    public ResponseEntity<List<Jogo>> listarNotaPessalMaiorQue(@RequestParam @Valid Double notaPessoal) {
         return ResponseEntity.ok(jogoService.listarNotaPessoalMinima(notaPessoal));
     }
 
 
     //BUSCAS---------------------------------------------------------------------------------------------
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Jogo> buscarJogoPorId(@PathVariable Integer id){
+        Jogo jogo =jogoService.buscarPorId(id);
+        return ResponseEntity.ok(jogo);
+    }
+
+
+    //-----------------------------------------------------------------------------------------------------------
+
+    //UPTADE
+
+
+    //DELETE
+    @DeleteMapping("{/id}")
+    public ResponseEntity<Void> deletarJogoPorId(@PathVariable Integer id) {
+        jogoService.deletarJogoPorId(id);
+        return ResponseEntity.noContent().build();
+    }
 }
