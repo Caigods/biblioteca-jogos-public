@@ -1,10 +1,12 @@
 package com.caigods.biblioteca_jogos.infrasctuture.entity;
 
+import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "jogos")
@@ -18,28 +20,29 @@ public class Jogo {
     @Column(name = "titulo", nullable = false)
     private String titulo;
 
-    @NotBlank(message = "Plataforma não pode estar vazio")
-    @Column(name = "plataforma", nullable = false)
-    private String plataforma;
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Plataforma não pode estar vazia")
+    @Column(name = "plataformas", nullable = false)
+    private PlataformaJogo plataformas;
 
     @Column(name = "genero")
     private String genero;
 
-    @NotBlank(message = "Ano de lançamento não pode estar vazio")
     @Min(value = 1958, message = "Ano de lançamento deve ser maior que 1958")
     @Column(name = "ano de lancamento")
     private Integer anoDeLancamento;
 
+    @NotNull(message = "Status não pode estar vazio")
     @Enumerated(EnumType.STRING)
     @Column(name = "status de jogo")
     private StatusJogo status;
 
-    @Max(value = 10, message = "Nota nao pode ser maior que 10")
-    @Min(value = 0, message = "Nota nao pode ser negativa")
+    @Max(value = 10, message = "Nota não pode ser maior que 10")
+    @Min(value = 0, message = "Nota não pode ser negativa")
     @Column(name = "nota pessoal")
-    private Integer notaPessoal = 0;
+    private Double notaPessoal = 0.0;
 
-    @Min(value = 0, message = "Horas jogadas nao pode ser negativa")
+    @Min(value = 0, message = "Horas jogadas não pode ser negativa")
     @Column(name = "horas jogadas")
     private Double horasJogadas;
 
@@ -48,17 +51,17 @@ public class Jogo {
     public Jogo() {
         //Deixar um valor por padrao
         this.horasJogadas = 0.0;
-        this.notaPessoal = 0;
+        this.notaPessoal = 0.0;
 
     }
 
     //Constructor com todos os argumentos
-    public Jogo(Integer id, String titulo, String plataforma,
+    public Jogo(Integer id, String titulo, PlataformaJogo plataformas,
                 String genero, Integer anoDeLancamento, StatusJogo status,
-                Integer notaPessoal, Double horasJogadas) {
+                Double notaPessoal, Double horasJogadas) {
         this.id = id;
         this.titulo = titulo;
-        this.plataforma = plataforma;
+        this.plataformas = plataformas;
         this.genero = genero;
         this.anoDeLancamento = anoDeLancamento;
         this.status = status;
@@ -109,11 +112,11 @@ public class Jogo {
         this.status = status;
     }
 
-    public Integer getNotaPessoal() {
+    public Double getNotaPessoal() {
         return notaPessoal;
     }
 
-    public void setNotaPessoal(Integer notaPessoal) {
+    public void setNotaPessoal(Double notaPessoal) {
         this.notaPessoal = notaPessoal;
     }
 
@@ -125,12 +128,12 @@ public class Jogo {
         this.horasJogadas = horasJogadas;
     }
 
-    public String getPlataforma() {
-        return plataforma;
+    public PlataformaJogo getPlataformas() {
+        return plataformas;
     }
 
-    public void setPlataforma(String plataforma) {
-        this.plataforma = plataforma;
+    public void setPlataformas(PlataformaJogo plataformas) {
+        this.plataformas = plataformas;
     }
 
 }

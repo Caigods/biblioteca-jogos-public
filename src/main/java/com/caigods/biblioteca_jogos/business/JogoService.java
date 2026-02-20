@@ -1,10 +1,10 @@
 package com.caigods.biblioteca_jogos.business;
 
 import com.caigods.biblioteca_jogos.infrasctuture.entity.Jogo;
+import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.repository.JogoRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,48 +19,105 @@ public class JogoService {
         this.jogoRepository = jogoRepository;
     }
 
-    @Transactional
-    public Jogo salvarJogo(Jogo jogo) {
 
-        //fazer validacoes logicas de hora, ano,
-        // fazer validacao do enum statusjogo, e plataforma
-        return jogoRepository.save(jogo);
+    //LISTAGENS-----------------------------------------------------------------------------
+    //Listar tudo
+    public List<Jogo> listaJogos() {
+        return jogoRepository.findAll();
     }
 
+    //Listar QUANTIDADE de jogos cadastrados
+    public long listarQtdJogos() {
+        return jogoRepository.count();
+    }
+
+    // Listar QUANTIDADE Jogos por plataforma
+    public Long listarQtdPorPlataforma(PlataformaJogo plataformas) {
+        return jogoRepository.countByPlataformas(plataformas);
+    }
+
+    //Listar Notas MAIOR OU IGUAL
+    public List<Jogo> listarNotaPessoalMinima (Double notaPessoal){
+        return jogoRepository.findByNotaPessoalGreaterThanEqual(notaPessoal);
+    }
+    //-----------------------------------------------------------------------------------------
+
+
+    //SALVAR JOGO
+    @Transactional
+    public Jogo salvarJogo(Jogo jogo) {
+        //validação de horas já está validado para começar em zero no constructor da entity
+        if (jogo.getHorasJogadas() < 0) {
+            throw new RuntimeException("Hora nao pode ser negativa");
+        }
+
+
+        //Validação do ano
+        int anoAtual = LocalDate.now().getYear(); //pega o ano do sistema
+        if (jogo.getAnoDeLancamento() != null) {
+            if (jogo.getAnoDeLancamento() > anoAtual) {
+                throw new RuntimeException("Ano não pode ser maior que " + anoAtual);
+            }
+            if (jogo.getAnoDeLancamento() < 1958) {
+                throw new RuntimeException("Ano não pode ser menor que 1958");
+            }
+        }
+
+        //Nao permite títulos duplicados na MESMA PLATAFORMA
+        if (jogoRepository.existsJogoByTituloAndPlataformas(jogo.getTitulo(), jogo.getPlataformas())) {
+            throw new RuntimeException("Já existe um jogo com esse título nessa plataforma");
+        }
+        //validacao Nota pessoal
+        if (jogo.getNotaPessoal() < 0.0 || jogo.getNotaPessoal() > 10.0) {
+            throw new RuntimeException("Nota deve ser entre 0 e 10");
+        }
+
+        return jogoRepository.saveAndFlush(jogo);
+
+    }
+
+
+    // BUSCAS---------------------------------------------------------------------------------
     public Jogo buscarPorId(Integer id) {
         return jogoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Jogo nao encontrado"));
+                .orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
     }
 
     public List<Jogo> buscarPorTitulo(String titulo) {
-        List<Jogo> resultado = jogoRepository.findByTituloContainingIgnoreCase(titulo);
-        return resultado;
+        return jogoRepository.findByTituloContainingIgnoreCase(titulo);
     }
 
-    public List<Jogo> buscarPorPlataforma(String plataforma) {
-        List<Jogo> resultado = jogoRepository.findByPlataformaContainingIgnoreCase(plataforma);
-        return resultado;
+    public List<Jogo> buscarPorPlataformas(PlataformaJogo plataformas) {
+        return jogoRepository.findByPlataformas(plataformas);
     }
 
     public List<Jogo> buscarPorGenero(String genero) {
-        List<Jogo> resultado = jogoRepository.findByGeneroContainingIgnoreCase(genero);
-        return resultado;
+        return jogoRepository.findByGeneroContainingIgnoreCase(genero);
     }
 
     public List<Jogo> buscarPorStatus(StatusJogo status) {
-        List<Jogo> resultado = jogoRepository.findByStatusContainingIgnoreCase(status);
-        return resultado;
+        return jogoRepository.findByStatus(status);
     }
 
+    public List<Jogo> buscarPorNotaPessoal(Double notaPessoal){
+        return jogoRepository.findByNotaPessoal(notaPessoal);
+    }
+
+    //--------------------------------------------------------------------------------------
+
+
+    // DELETAR JOGO
     @Transactional
     public void deletarJogoPorId(Integer id) {
         Jogo jogo = buscarPorId(id);
         jogoRepository.delete(jogo);
     }
 
+
+    //ATUALIZAR JOGO----------------------------------------------------------------------
     @Transactional
     public Jogo atualizarJogoPorId(Integer id, Jogo jogo) {
-        Jogo jogoEntity = buscarPorId(id);
+
 
         //Validacao de ano nao ser maior que o atual
         if (jogo.getAnoDeLancamento() != null) {
@@ -72,23 +129,26 @@ public class JogoService {
                 throw new RuntimeException("Ano nao pode ser menor que 1958");
             }
         }
-        //validacao para horas de jogo negativas
+
+        //validação para horas de jogo negativas
         if (jogo.getHorasJogadas() != null && jogo.getHorasJogadas() < 0) {
             throw new RuntimeException("Hora nao pode ser negativa");
 
         }
-        if (jogo.getNotaPessoal() != null && jogo.getNotaPessoal() < 0 || jogo.getNotaPessoal() > 10) {
+        if (jogo.getNotaPessoal() < 0.0 || jogo.getNotaPessoal() > 10.0) {
             throw new RuntimeException("Nota deve ser entre 0 e 10");
         }
 
-        // Se o usuario enviou um novo valor, atualizamos;
-        // caso contrário, mantemos o que ja estava gravado para não apagar os dados.
+
+        Jogo jogoEntity = buscarPorId(id);
+        // Se o usuário enviou um novo valor, atualizamos;
+        // caso contrário, mantemos o que já estava gravado para não apagar os dados.
 
         if (jogo.getTitulo() != null) {
             jogoEntity.setTitulo(jogo.getTitulo());
         }
-        if (jogo.getPlataforma() != null) {
-            jogoEntity.setPlataforma(jogo.getPlataforma());
+        if (jogo.getPlataformas() != null) {
+            jogoEntity.setPlataformas(jogo.getPlataformas());
         }
         if (jogo.getGenero() != null) {
             jogoEntity.setGenero(jogo.getGenero());
@@ -107,7 +167,28 @@ public class JogoService {
         }
 
 
-        return null; //retirar o null e consertar
+        return jogoRepository.saveAndFlush(jogoEntity);
+    }
+
+    //Atualizar apenas status / Jogando, zerado, dropado, queue
+    @Transactional
+    public Jogo atualizarStatusPorId(Integer id, Jogo jogo) {
+        Jogo jogoEntity = buscarPorId(id);
+        jogoEntity.setStatus(jogo.getStatus());
+        return jogoRepository.save(jogoEntity);
+    }
+
+    @Transactional
+    public Jogo adicionarHorasJogadasPorID(Integer id, Jogo jogo) {
+        if (jogo.getHorasJogadas() < 0) {
+            throw new RuntimeException("Horas nao podem ser negativas");
+        }
+        Jogo jogoEntity = buscarPorId(id);
+        Double jogoHorasAntiga = jogoEntity.getHorasJogadas();
+        Double jogoHorasNova = jogo.getHorasJogadas();
+
+        jogoEntity.setHorasJogadas(jogoHorasNova + jogoHorasAntiga);
+        return jogoRepository.save(jogoEntity);
     }
 
 
