@@ -67,7 +67,7 @@ public class JogoService {
         if (jogoRepository.existsJogoByTituloAndPlataformas(jogo.getTitulo(), jogo.getPlataformas())) {
             throw new RuntimeException("Já existe um jogo com esse título nessa plataforma");
         }
-        //validacao Nota pessoal
+        //validação Nota pessoal
         if (jogo.getNotaPessoal() < 0.0 || jogo.getNotaPessoal() > 10.0) {
             throw new RuntimeException("Nota deve ser entre 0 e 10");
         }
@@ -119,7 +119,7 @@ public class JogoService {
     public Jogo atualizarJogoPorId(Integer id, Jogo jogo) {
 
 
-        //Validacao de ano nao ser maior que o atual
+        //Validação de ano não ser maior que o atual
         if (jogo.getAnoDeLancamento() != null) {
             int anoAtual = LocalDate.now().getYear(); //pega o ano do sistema
             if (jogo.getAnoDeLancamento() > anoAtual) {
@@ -173,6 +173,9 @@ public class JogoService {
     //Atualizar apenas status / Jogando, zerado, dropado, queue
     @Transactional
     public Jogo atualizarStatusPorId(Integer id, Jogo jogo) {
+        if (jogo.getStatus() == null){
+            throw new RuntimeException("Status é obrigatório para esta operação");
+        }
         Jogo jogoEntity = buscarPorId(id);
         jogoEntity.setStatus(jogo.getStatus());
         return jogoRepository.save(jogoEntity);
@@ -180,6 +183,11 @@ public class JogoService {
 
     @Transactional
     public Jogo adicionarHorasJogadasPorID(Integer id, Jogo jogo) {
+        //Validar se o campo horasJogadas foi enviado
+        if (jogo.getHorasJogadas() == null) {
+            throw new RuntimeException("O campo horasJogadas é obrigatório para esta operação");
+        }
+        //Validar horas negativas
         if (jogo.getHorasJogadas() < 0) {
             throw new RuntimeException("Horas nao podem ser negativas");
         }
