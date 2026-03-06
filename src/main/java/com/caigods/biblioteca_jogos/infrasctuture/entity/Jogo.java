@@ -39,11 +39,11 @@ public class Jogo {
 
     @Max(value = 10, message = "Nota não pode ser maior que 10")
     @Min(value = 0, message = "Nota não pode ser negativa")
-    @Column(name = "nota_pessoal")
+    @Column(name = "nota_pessoal", length = 4)
     private Double notaPessoal = 0.0;
 
     @Min(value = 0, message = "Horas jogadas não pode ser negativa")
-    @Column(name = "horas_jogadas")
+    @Column(name = "horas_jogadas", length = 6)
     private Double horasJogadas;
 
 

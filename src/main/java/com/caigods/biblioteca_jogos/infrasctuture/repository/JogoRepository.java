@@ -4,9 +4,10 @@ import com.caigods.biblioteca_jogos.infrasctuture.entity.Jogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface JogoRepository extends JpaRepository<Jogo, Integer> {
 
     List<Jogo> findByPlataformas(PlataformaJogo plataformas);

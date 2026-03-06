@@ -112,13 +112,13 @@ public class JogoController {
 
     //ADICIONAR HORAS
     @PatchMapping("/{id}/adicionar_horas")
-    public ResponseEntity<Jogo> adicionarHorasJogadasPorID(@PathVariable Integer id,@RequestBody Jogo jogo ){
-        return ResponseEntity.ok(jogoService.adicionarHorasJogadasPorID(id,jogo));
+    public ResponseEntity<Jogo> adicionarHorasJogadasPorID(@PathVariable Integer id,@RequestParam Double horasJogadas ){
+        return ResponseEntity.ok(jogoService.adicionarHorasJogadasPorId(id, horasJogadas));
     }
     //ATUALIZAR STATUS
     @PatchMapping("/{id}/atualizar_status")
-    public ResponseEntity<Jogo> atualizarStatusPorId(@PathVariable Integer id, @RequestBody Jogo jogo){
-        return ResponseEntity.ok(jogoService.atualizarStatusPorId(id,jogo));
+    public ResponseEntity<Jogo> atualizarStatusPorId(@PathVariable Integer id, @RequestParam StatusJogo statusJogo){
+        return ResponseEntity.ok(jogoService.atualizarStatusPorId(id,statusJogo));
     }
 
 
