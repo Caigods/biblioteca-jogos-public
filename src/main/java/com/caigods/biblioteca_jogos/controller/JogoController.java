@@ -1,6 +1,8 @@
 package com.caigods.biblioteca_jogos.controller;
 
 import com.caigods.biblioteca_jogos.business.JogoService;
+import com.caigods.biblioteca_jogos.dto.JogoRequestDTO;
+import com.caigods.biblioteca_jogos.dto.JogoUpdateDTO;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.Jogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
@@ -29,8 +31,8 @@ public class JogoController {
     //SALVAR
     //@Valid para validar as anotações na Entity (@min,@max,@notblank...)
     @PostMapping
-    public ResponseEntity<Jogo> salvarJogo(@RequestBody @Valid Jogo jogo) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(jogoService.salvarJogo(jogo));
+    public ResponseEntity<Jogo> salvarJogo(@RequestBody @Valid JogoRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(jogoService.salvarJogo(dto));
     }
 
 
@@ -93,7 +95,7 @@ public class JogoController {
     }
 
     //Nota exata
-    @GetMapping("/nota_pessoal")
+    @GetMapping("/nota-pessoal")
     public ResponseEntity<List<Jogo>> buscarPorNotaPessoal (@RequestParam Double notaPessoal){
         return ResponseEntity.ok(jogoService.buscarPorNotaPessoal(notaPessoal));
 
@@ -103,20 +105,19 @@ public class JogoController {
 
     //UPDATE
 
-    //SALVAR JOGO
     @PutMapping("/{id}")
     public ResponseEntity<Jogo> atualizarJogoPorId(
-            @PathVariable Integer id, @RequestBody @Valid Jogo jogo){
-       return ResponseEntity.ok(jogoService.atualizarJogoPorId(id, jogo));
+            @PathVariable Integer id, @RequestBody JogoUpdateDTO dto){
+       return ResponseEntity.ok(jogoService.atualizarJogoPorId(id, dto));
     }
 
     //ADICIONAR HORAS
-    @PatchMapping("/{id}/adicionar_horas")
+    @PatchMapping("/{id}/adicionar-horas")
     public ResponseEntity<Jogo> adicionarHorasJogadasPorID(@PathVariable Integer id,@RequestParam Double horasJogadas ){
         return ResponseEntity.ok(jogoService.adicionarHorasJogadasPorId(id, horasJogadas));
     }
     //ATUALIZAR STATUS
-    @PatchMapping("/{id}/atualizar_status")
+    @PatchMapping("/{id}/atualizar-status")
     public ResponseEntity<Jogo> atualizarStatusPorId(@PathVariable Integer id, @RequestParam StatusJogo statusJogo){
         return ResponseEntity.ok(jogoService.atualizarStatusPorId(id,statusJogo));
     }

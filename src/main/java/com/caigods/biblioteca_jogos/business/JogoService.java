@@ -1,5 +1,7 @@
 package com.caigods.biblioteca_jogos.business;
 
+import com.caigods.biblioteca_jogos.dto.JogoRequestDTO;
+import com.caigods.biblioteca_jogos.dto.JogoUpdateDTO;
 import com.caigods.biblioteca_jogos.exception.ConflictException;
 import com.caigods.biblioteca_jogos.exception.BadRequestException;
 import com.caigods.biblioteca_jogos.exception.NotFoundException;
@@ -47,19 +49,39 @@ public class JogoService {
 
 
     //SALVAR JOGO
+
     @Transactional
     public Jogo salvarJogo(Jogo jogo) {
         //validação de horas já está validado para começar em zero no constructor da entity
         validarHorasNegativas(jogo.getHorasJogadas());
+
         existeJogoNaPlataforma(jogo.getTitulo(),jogo.getPlataformas());
-        //Validação do ano
+
+        //Validação do ano maior que atual/ menor que 1958
         validarAnoLancamento(jogo.getAnoDeLancamento());
 
-        //validação Nota pessoal
+        //validação Nota pessoal 0-10
         validarNotaPessoal(jogo.getNotaPessoal());
-
         return jogoRepository.saveAndFlush(jogo);
+    }
 
+    @Transactional
+    public Jogo salvarJogo (JogoRequestDTO dto){
+        Jogo jogo = new Jogo(
+                null,
+                dto.getTitulo(),
+                dto.getPlataformas(),
+                dto.getGenero(),
+                dto.getAnoDeLancamento(),
+                dto.getStatus(),
+                dto.getNotaPessoal(),
+                dto.getHorasJogadas()
+        );
+        existeJogoNaPlataforma(jogo.getTitulo(),jogo.getPlataformas());
+        validarAnoLancamento(jogo.getAnoDeLancamento());
+        validarNotaPessoal(jogo.getNotaPessoal());
+        validarHorasNegativas(jogo.getHorasJogadas());
+    return jogoRepository.saveAndFlush(jogo);
     }
 
 
@@ -104,45 +126,45 @@ public class JogoService {
 
     //ATUALIZAR JOGO----------------------------------------------------------------------
     @Transactional
-    public Jogo atualizarJogoPorId(Integer id, Jogo jogo) {
+    public Jogo atualizarJogoPorId(Integer id, JogoUpdateDTO dto) {
 
 
         //Validação de ano não ser maior que o atual
-        validarAnoLancamento(jogo.getAnoDeLancamento());
+        validarAnoLancamento(dto.getAnoDeLancamento());
         //validação para horas de jogo negativas
-        validarHorasNegativas(jogo.getHorasJogadas());
+        validarHorasNegativas(dto.getHorasJogadas());
         //validação para nota pessoal entre 0 e 10
-        validarNotaPessoal(jogo.getNotaPessoal());
+        validarNotaPessoal(dto.getNotaPessoal());
 
 
         Jogo jogoEntity = buscarPorId(id);
         // Se o usuário enviou um novo valor, atualizamos;
         // caso contrário, mantemos o que já estava gravado para não apagar os dados.
 
-        if (jogo.getTitulo() != null) {
-            jogoEntity.setTitulo(jogo.getTitulo());
+        if (dto.getTitulo() != null) {
+            jogoEntity.setTitulo(dto.getTitulo());
         }
-        if (jogo.getPlataformas() != null) {
-            jogoEntity.setPlataformas(jogo.getPlataformas());
+        if (dto.getPlataformas() != null) {
+            jogoEntity.setPlataformas(dto.getPlataformas());
         }
-        if (jogo.getGenero() != null) {
-            jogoEntity.setGenero(jogo.getGenero());
+        if (dto.getGenero() != null) {
+            jogoEntity.setGenero(dto.getGenero());
         }
-        if (jogo.getAnoDeLancamento() != null) {
-            jogoEntity.setAnoDeLancamento(jogo.getAnoDeLancamento());
+        if (dto.getAnoDeLancamento() != null) {
+            jogoEntity.setAnoDeLancamento(dto.getAnoDeLancamento());
         }
-        if (jogo.getStatus() != null) {
-            jogoEntity.setStatus(jogo.getStatus());
+        if (dto.getStatus() != null) {
+            jogoEntity.setStatus(dto.getStatus());
         }
-        if (jogo.getNotaPessoal() != null) {
-            jogoEntity.setNotaPessoal(jogo.getNotaPessoal());
+        if (dto.getNotaPessoal() != null) {
+            jogoEntity.setNotaPessoal(dto.getNotaPessoal());
         }
-        if (jogo.getHorasJogadas() != null) {
-            jogoEntity.setHorasJogadas(jogo.getHorasJogadas());
+        if (dto.getHorasJogadas() != null) {
+            jogoEntity.setHorasJogadas(dto.getHorasJogadas());
         }
 
 
-        return jogoRepository.saveAndFlush(jogoEntity);
+        return jogoRepository.save(jogoEntity);
     }
 
     //Atualizar apenas status / Jogando, zerado, dropado, queue
@@ -191,7 +213,7 @@ public class JogoService {
 
         int anoAtual = Year.now().getValue();
         if ( anoDeLancamento > anoAtual) {
-            throw new BadRequestException("O ano de lançamento não pode ser maior que o ano atual: " + anoDeLancamento);
+            throw new BadRequestException("O ano de lançamento não pode ser maior que o ano atual: " + anoAtual);
         }
         if (anoDeLancamento < 1958) {
             throw new BadRequestException("Ano não pode ser menor que 1958");
