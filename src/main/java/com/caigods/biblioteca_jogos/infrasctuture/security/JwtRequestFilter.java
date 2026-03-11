@@ -1,4 +1,4 @@
-package com.caigods.biblioteca_jogos.security;
+package com.caigods.biblioteca_jogos.infrasctuture.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

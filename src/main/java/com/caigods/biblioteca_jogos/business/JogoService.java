@@ -11,6 +11,7 @@ import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.repository.JogoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
 import java.time.Year;
 import java.util.List;
 
@@ -51,22 +52,7 @@ public class JogoService {
     //SALVAR JOGO
 
     @Transactional
-    public Jogo salvarJogo(Jogo jogo) {
-        //validação de horas já está validado para começar em zero no constructor da entity
-        validarHorasNegativas(jogo.getHorasJogadas());
-
-        existeJogoNaPlataforma(jogo.getTitulo(),jogo.getPlataformas());
-
-        //Validação do ano maior que atual/ menor que 1958
-        validarAnoLancamento(jogo.getAnoDeLancamento());
-
-        //validação Nota pessoal 0-10
-        validarNotaPessoal(jogo.getNotaPessoal());
-        return jogoRepository.saveAndFlush(jogo);
-    }
-
-    @Transactional
-    public Jogo salvarJogo (JogoRequestDTO dto){
+    public Jogo salvarJogo(JogoRequestDTO dto) {
         Jogo jogo = new Jogo(
                 null,
                 dto.getTitulo(),
@@ -77,13 +63,12 @@ public class JogoService {
                 dto.getNotaPessoal(),
                 dto.getHorasJogadas()
         );
-        existeJogoNaPlataforma(jogo.getTitulo(),jogo.getPlataformas());
+        existeJogoNaPlataforma(jogo.getTitulo(), jogo.getPlataformas());
         validarAnoLancamento(jogo.getAnoDeLancamento());
         validarNotaPessoal(jogo.getNotaPessoal());
         validarHorasNegativas(jogo.getHorasJogadas());
-    return jogoRepository.saveAndFlush(jogo);
+        return jogoRepository.save(jogo);
     }
-
 
 
     // BUSCAS---------------------------------------------------------------------------------
@@ -93,24 +78,44 @@ public class JogoService {
     }
 
     public List<Jogo> buscarPorTitulo(String titulo) {
-        return jogoRepository.findByTituloContainingIgnoreCase(titulo);
+        List<Jogo> jogos = jogoRepository.findByTituloContainingIgnoreCase(titulo);
+        if (jogos.isEmpty()) {
+            throw new NotFoundException("Nenhum jogo encontrado com o título: " + titulo);
+        }
+        return jogos;
     }
 
     public List<Jogo> buscarPorPlataformas(PlataformaJogo plataformas) {
-        return jogoRepository.findByPlataformas(plataformas);
+        List<Jogo> jogos = jogoRepository.findByPlataformas(plataformas);
+        if (jogos.isEmpty()) {
+            throw new NotFoundException("Nenhum jogo encontrado para a plataforma: " + plataformas);
+        }
+        return jogos;
     }
 
     public List<Jogo> buscarPorGenero(String genero) {
-        return jogoRepository.findByGeneroContainingIgnoreCase(genero);
+        List<Jogo> jogos = jogoRepository.findByGeneroContainingIgnoreCase(genero);
+        if (jogos.isEmpty()) {
+            throw new NotFoundException("Nenhum jogo encontrado com o gênero: " + genero);
+        }
+        return jogos;
     }
 
     public List<Jogo> buscarPorStatus(StatusJogo status) {
-        return jogoRepository.findByStatus(status);
+        List<Jogo> jogos = jogoRepository.findByStatus(status);
+        if (jogos.isEmpty()) {
+            throw new NotFoundException("Nenhum jogo encontrado com o status: " + status);
+        }
+        return jogos;
     }
 
     public List<Jogo> buscarPorNotaPessoal(Double notaPessoal) {
         validarNotaPessoal(notaPessoal);
-        return jogoRepository.findByNotaPessoal(notaPessoal);
+        List<Jogo> jogos = jogoRepository.findByNotaPessoal(notaPessoal);
+        if (jogos.isEmpty()) {
+            throw new NotFoundException("Nenhum jogo encontrado com a nota: " + notaPessoal);
+        }
+        return jogos;
     }
 
     //--------------------------------------------------------------------------------------
@@ -212,7 +217,7 @@ public class JogoService {
         }
 
         int anoAtual = Year.now().getValue();
-        if ( anoDeLancamento > anoAtual) {
+        if (anoDeLancamento > anoAtual) {
             throw new BadRequestException("O ano de lançamento não pode ser maior que o ano atual: " + anoAtual);
         }
         if (anoDeLancamento < 1958) {
@@ -221,7 +226,7 @@ public class JogoService {
     }
 
     private void validarNotaPessoal(Double notaPessoal) {
-        if (notaPessoal == null){
+        if (notaPessoal == null) {
             return;
         }
         if (notaPessoal < 0.0 || notaPessoal > 10.0) {

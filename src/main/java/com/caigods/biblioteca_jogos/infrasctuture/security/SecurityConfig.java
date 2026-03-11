@@ -1,4 +1,4 @@
-package com.caigods.biblioteca_jogos.security;
+package com.caigods.biblioteca_jogos.infrasctuture.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

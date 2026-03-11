@@ -1,7 +1,8 @@
-package com.caigods.biblioteca_jogos.security;
+package com.caigods.biblioteca_jogos.infrasctuture.security;
 
-import com.javanauta.aprendendospring.infrastructure.entity.Usuario;
-import com.javanauta.aprendendospring.infrastructure.repository.UsuarioRepository;
+
+import com.caigods.biblioteca_jogos.infrasctuture.entity.Usuario;
+import com.caigods.biblioteca_jogos.infrasctuture.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,9 +16,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Implementação do método para carregar detalhes do usuário pelo e-mail
+    // Implementação do metodo para carregar detalhes do usuário pelo e-mail
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
         // Busca o usuário no banco de dados pelo e-mail
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));

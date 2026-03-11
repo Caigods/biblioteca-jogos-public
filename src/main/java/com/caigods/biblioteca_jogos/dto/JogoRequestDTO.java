@@ -23,6 +23,19 @@ public class JogoRequestDTO {
 
     private Double horasJogadas;
 
+    public JogoRequestDTO(String titulo, PlataformaJogo plataformas, String genero, Integer anoDeLancamento, StatusJogo status, Double notaPessoal, Double horasJogadas) {
+        this.titulo = titulo;
+        this.plataformas = plataformas;
+        this.genero = genero;
+        this.anoDeLancamento = anoDeLancamento;
+        this.status = status;
+        this.notaPessoal = notaPessoal;
+        this.horasJogadas = horasJogadas;
+    }
+
+    public JogoRequestDTO() {
+
+    }
 
     //GETTERS AND SETTERS
     public PlataformaJogo getPlataformas() {

@@ -20,6 +20,20 @@ public class JogoUpdateDTO {
 
     private Double horasJogadas;
 
+    public JogoUpdateDTO(String titulo, PlataformaJogo plataformas, String genero, Integer anoDeLancamento, Double notaPessoal, StatusJogo status, Double horasJogadas) {
+        this.titulo = titulo;
+        this.plataformas = plataformas;
+        this.genero = genero;
+        this.anoDeLancamento = anoDeLancamento;
+        this.notaPessoal = notaPessoal;
+        this.status = status;
+        this.horasJogadas = horasJogadas;
+    }
+
+    public JogoUpdateDTO() {
+
+    }
+
 
 
     //GETTERS AND SETTERS
