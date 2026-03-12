@@ -1,14 +1,14 @@
 package com.caigods.biblioteca_jogos.dto;
 
 public class UsuarioRequestDTO {
+    private String nome;
     private String email;
     private String senha;
-    private String nome;
 
-    public UsuarioRequestDTO(String email, String senha, String nome) {
+    public UsuarioRequestDTO(String nome, String email, String senha ) {
+        this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.nome = nome;
     }
 
     public UsuarioRequestDTO() {

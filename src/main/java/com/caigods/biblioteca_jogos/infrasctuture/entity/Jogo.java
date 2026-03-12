@@ -46,10 +46,20 @@ public class Jogo {
     @Column(name = "horas_jogadas", length = 6)
     private Double horasJogadas;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
 
     //Constructor vazio
     public Jogo() {
         //Deixar um valor por padrao
+        this.id = id;
+        this.titulo = titulo;
+        this.plataformas = plataformas;
+        this.genero = genero;
+        this.anoDeLancamento = anoDeLancamento;
+        this.status = status;
         this.horasJogadas = 0.0;
         this.notaPessoal = 0.0;
 
