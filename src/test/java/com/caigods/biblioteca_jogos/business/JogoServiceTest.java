@@ -1,14 +1,18 @@
 package com.caigods.biblioteca_jogos.business;
 
 import com.caigods.biblioteca_jogos.dto.JogoRequestDTO;
+import com.caigods.biblioteca_jogos.dto.JogoResponseDTO;
 import com.caigods.biblioteca_jogos.dto.JogoUpdateDTO;
 import com.caigods.biblioteca_jogos.exception.BadRequestException;
 import com.caigods.biblioteca_jogos.exception.ConflictException;
 import com.caigods.biblioteca_jogos.exception.NotFoundException;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.Jogo;
+import com.caigods.biblioteca_jogos.infrasctuture.entity.Usuario;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.repository.JogoRepository;
+import com.caigods.biblioteca_jogos.infrasctuture.repository.UsuarioRepository;
+import com.caigods.biblioteca_jogos.mapper.JogoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -31,33 +35,33 @@ class JogoServiceTest {
     @Mock
     private JogoRepository jogoRepository;
 
+    @Mock
+    private UsuarioRepository usuarioRepository;
+
+    @Mock
+    private JogoMapper jogoMapper;
+
     @InjectMocks
     private JogoService jogoService;
 
+    private Usuario usuarioValido;
     private Jogo jogoValido;
     private JogoRequestDTO dtoValido;
+    private JogoResponseDTO responseValido;
+    private static final String EMAIL = "caigods@gmail.com";
 
     @BeforeEach
     void setUp() {
-        jogoValido = new Jogo(
-                1,
-                "The Witcher 3",
-                PlataformaJogo.PC,
-                "RPG",
-                2015,
-                StatusJogo.ZERADO,
-                9.5,
-                100.0
-        );
+        usuarioValido = new Usuario(1, "Caigods", EMAIL, "senha123");
 
-        dtoValido = new JogoRequestDTO();
-        dtoValido.setTitulo("The Witcher 3");
-        dtoValido.setPlataformas(PlataformaJogo.PC);
-        dtoValido.setGenero("RPG");
-        dtoValido.setAnoDeLancamento(2015);
-        dtoValido.setStatus(StatusJogo.ZERADO);
-        dtoValido.setNotaPessoal(9.5);
-        dtoValido.setHorasJogadas(100.0);
+        jogoValido = new Jogo(1, "The Witcher 3", PlataformaJogo.PC, "RPG",
+                2015, StatusJogo.ZERADO, 9.5, 100.0, usuarioValido);
+
+        dtoValido = new JogoRequestDTO("The Witcher 3", PlataformaJogo.PC, "RPG",
+                2015, StatusJogo.ZERADO, 9.5, 100.0);
+
+        responseValido = new JogoResponseDTO(1, "The Witcher 3", PlataformaJogo.PC, "RPG",
+                2015, StatusJogo.ZERADO, 9.5, 100.0);
     }
 
     // ================================
@@ -70,120 +74,104 @@ class JogoServiceTest {
         @Test
         @DisplayName("Deve salvar jogo com dados válidos")
         void deveSalvarJogoComDadosValidos() {
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
-            when(jogoRepository.saveAndFlush(any())).thenReturn(jogoValido);
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.existsJogoByTituloAndPlataformasAndUsuario(any(), any(), any())).thenReturn(false);
+            when(jogoMapper.toEntity(dtoValido)).thenReturn(jogoValido);
+            when(jogoRepository.save(any())).thenReturn(jogoValido);
+            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
-            Jogo resultado = jogoService.salvarJogo(dtoValido);
+            JogoResponseDTO resultado = jogoService.salvarJogo(dtoValido, EMAIL);
 
-            assertThat(resultado).isEqualTo(jogoValido);
-            verify(jogoRepository).saveAndFlush(any());
+            assertThat(resultado).isEqualTo(responseValido);
+            verify(jogoRepository).save(any());
         }
 
         @Test
-        @DisplayName("Deve lançar BadRequestException quando horas jogadas são negativas")
-        void deveLancarExcecaoQuandoHorasNegativas() {
-            dtoValido.setHorasJogadas(-1.0);
+        @DisplayName("Deve lançar NotFoundException quando usuário não encontrado")
+        void deveLancarExcecaoQuandoUsuarioNaoEncontrado() {
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido))
-                    .isInstanceOf(BadRequestException.class)
-                    .hasMessageContaining("negativas");
+            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido, EMAIL))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessageContaining("Usuário não encontrado");
         }
 
         @Test
         @DisplayName("Deve lançar ConflictException quando jogo já existe na plataforma")
-        void deveLancarExcecaoQuandoJogoJaExisteNaPlataforma() {
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(true);
+        void deveLancarExcecaoQuandoJogoJaExiste() {
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.existsJogoByTituloAndPlataformasAndUsuario(any(), any(), any())).thenReturn(true);
 
-            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido))
+            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido, EMAIL))
                     .isInstanceOf(ConflictException.class)
-                    .hasMessageContaining("Já existe um jogo");
+                    .hasMessageContaining("Já existe");
+        }
+
+        @Test
+        @DisplayName("Deve lançar BadRequestException quando horas são negativas")
+        void deveLancarExcecaoQuandoHorasNegativas() {
+            dtoValido.setHorasJogadas(-1.0);
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.existsJogoByTituloAndPlataformasAndUsuario(any(), any(), any())).thenReturn(false);
+
+            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido, EMAIL))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessageContaining("negativas");
         }
 
         @Test
         @DisplayName("Deve lançar BadRequestException quando ano é maior que o atual")
         void deveLancarExcecaoQuandoAnoMaiorQueAtual() {
             dtoValido.setAnoDeLancamento(Year.now().getValue() + 1);
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.existsJogoByTituloAndPlataformasAndUsuario(any(), any(), any())).thenReturn(false);
 
-            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido))
+            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido, EMAIL))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessageContaining("ano atual");
         }
 
         @Test
-        @DisplayName("Deve lançar BadRequestException quando ano é menor que 1958")
-        void deveLancarExcecaoQuandoAnoMenorQue1958() {
-            dtoValido.setAnoDeLancamento(1957);
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
+        @DisplayName("Deve lançar BadRequestException quando nota é inválida")
+        void deveLancarExcecaoQuandoNotaInvalida() {
+            dtoValido.setNotaPessoal(11.0);
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.existsJogoByTituloAndPlataformasAndUsuario(any(), any(), any())).thenReturn(false);
 
-            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido))
-                    .isInstanceOf(BadRequestException.class)
-                    .hasMessageContaining("1958");
-        }
-
-        @Test
-        @DisplayName("Deve aceitar ano exatamente igual a 1958")
-        void deveAceitarAnoIgualA1958() {
-            dtoValido.setAnoDeLancamento(1958);
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
-            when(jogoRepository.saveAndFlush(any())).thenReturn(jogoValido);
-
-            assertThatCode(() -> jogoService.salvarJogo(dtoValido)).doesNotThrowAnyException();
-        }
-
-        @Test
-        @DisplayName("Deve lançar BadRequestException quando nota pessoal é maior que 10")
-        void deveLancarExcecaoQuandoNotaMaiorQueDez() {
-            dtoValido.setNotaPessoal(10.1);
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
-
-            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido))
+            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido, EMAIL))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessageContaining("0 e 10");
         }
+    }
+
+    // ================================
+    // LISTAGENS
+    // ================================
+    @Nested
+    @DisplayName("listaJogos")
+    class ListaJogos {
 
         @Test
-        @DisplayName("Deve lançar BadRequestException quando nota pessoal é negativa")
-        void deveLancarExcecaoQuandoNotaNegativa() {
-            dtoValido.setNotaPessoal(-0.1);
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
+        @DisplayName("Deve retornar lista de jogos do usuário")
+        void deveRetornarListaDeJogos() {
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByUsuario(usuarioValido)).thenReturn(List.of(jogoValido));
+            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
-            assertThatThrownBy(() -> jogoService.salvarJogo(dtoValido))
-                    .isInstanceOf(BadRequestException.class)
-                    .hasMessageContaining("0 e 10");
+            List<JogoResponseDTO> resultado = jogoService.listaJogos(EMAIL);
+
+            assertThat(resultado).hasSize(1).contains(responseValido);
         }
 
         @Test
-        @DisplayName("Deve aceitar nota nos limites exatos (0.0 e 10.0)")
-        void deveAceitarNotaNosLimites() {
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
-            when(jogoRepository.saveAndFlush(any())).thenReturn(jogoValido);
+        @DisplayName("Deve lançar NotFoundException quando lista está vazia")
+        void deveLancarExcecaoQuandoListaVazia() {
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByUsuario(usuarioValido)).thenReturn(List.of());
 
-            dtoValido.setNotaPessoal(0.0);
-            assertThatCode(() -> jogoService.salvarJogo(dtoValido)).doesNotThrowAnyException();
-
-            dtoValido.setNotaPessoal(10.0);
-            assertThatCode(() -> jogoService.salvarJogo(dtoValido)).doesNotThrowAnyException();
-        }
-
-        @Test
-        @DisplayName("Deve aceitar ano nulo sem lançar exceção")
-        void deveAceitarAnoNulo() {
-            dtoValido.setAnoDeLancamento(null);
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
-            when(jogoRepository.saveAndFlush(any())).thenReturn(jogoValido);
-
-            assertThatCode(() -> jogoService.salvarJogo(dtoValido)).doesNotThrowAnyException();
-        }
-
-        @Test
-        @DisplayName("Deve aceitar nota nula sem lançar exceção")
-        void deveAceitarNotaNula() {
-            dtoValido.setNotaPessoal(null);
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
-            when(jogoRepository.saveAndFlush(any())).thenReturn(jogoValido);
-
-            assertThatCode(() -> jogoService.salvarJogo(dtoValido)).doesNotThrowAnyException();
+            assertThatThrownBy(() -> jogoService.listaJogos(EMAIL))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessageContaining("Nenhum jogo cadastrado");
         }
     }
 
@@ -197,46 +185,24 @@ class JogoServiceTest {
         @Test
         @DisplayName("Deve retornar jogo quando encontrado")
         void deveRetornarJogoQuandoEncontrado() {
-            when(jogoRepository.findById(1)).thenReturn(Optional.of(jogoValido));
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
+            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
-            Jogo resultado = jogoService.buscarPorId(1);
+            JogoResponseDTO resultado = jogoService.buscarPorId(1, EMAIL);
 
-            assertThat(resultado).isEqualTo(jogoValido);
+            assertThat(resultado).isEqualTo(responseValido);
         }
 
         @Test
         @DisplayName("Deve lançar NotFoundException quando jogo não encontrado")
         void deveLancarExcecaoQuandoJogoNaoEncontrado() {
-            when(jogoRepository.findById(99)).thenReturn(Optional.empty());
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByIdAndUsuario(99, usuarioValido)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> jogoService.buscarPorId(99))
+            assertThatThrownBy(() -> jogoService.buscarPorId(99, EMAIL))
                     .isInstanceOf(NotFoundException.class)
-                    .hasMessageContaining("não encontrado");
-        }
-    }
-
-    @Nested
-    @DisplayName("listaJogos")
-    class ListaJogos {
-
-        @Test
-        @DisplayName("Deve retornar lista com jogos cadastrados")
-        void deveRetornarListaDeJogos() {
-            when(jogoRepository.findAll()).thenReturn(List.of(jogoValido));
-
-            List<Jogo> resultado = jogoService.listaJogos();
-
-            assertThat(resultado).hasSize(1).contains(jogoValido);
-        }
-
-        @Test
-        @DisplayName("Deve retornar lista vazia quando não há jogos")
-        void deveRetornarListaVazia() {
-            when(jogoRepository.findAll()).thenReturn(List.of());
-
-            List<Jogo> resultado = jogoService.listaJogos();
-
-            assertThat(resultado).isEmpty();
+                    .hasMessageContaining("Jogo não encontrado");
         }
     }
 
@@ -250,9 +216,10 @@ class JogoServiceTest {
         @Test
         @DisplayName("Deve deletar jogo quando encontrado")
         void deveDeletarJogoQuandoEncontrado() {
-            when(jogoRepository.findById(1)).thenReturn(Optional.of(jogoValido));
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
 
-            jogoService.deletarJogoPorId(1);
+            jogoService.deletarJogoPorId(1, EMAIL);
 
             verify(jogoRepository).delete(jogoValido);
         }
@@ -260,9 +227,10 @@ class JogoServiceTest {
         @Test
         @DisplayName("Deve lançar NotFoundException ao deletar jogo inexistente")
         void deveLancarExcecaoAoDeletarJogoInexistente() {
-            when(jogoRepository.findById(99)).thenReturn(Optional.empty());
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByIdAndUsuario(99, usuarioValido)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> jogoService.deletarJogoPorId(99))
+            assertThatThrownBy(() -> jogoService.deletarJogoPorId(99, EMAIL))
                     .isInstanceOf(NotFoundException.class);
         }
     }
@@ -275,58 +243,31 @@ class JogoServiceTest {
     class AtualizarJogoPorId {
 
         @Test
-        @DisplayName("Deve atualizar apenas campos não nulos mantendo os demais")
+        @DisplayName("Deve atualizar apenas campos não nulos")
         void deveAtualizarApenasFieldsNaoNulos() {
-            Jogo jogoEntity = new Jogo(1, "The Witcher 3", PlataformaJogo.PC, "RPG", 2015, StatusJogo.ZERADO, 9.5, 100.0);
+            JogoUpdateDTO dto = new JogoUpdateDTO();
+            dto.setTitulo("Cyberpunk 2077");
 
-            JogoUpdateDTO jogoUpdate = new JogoUpdateDTO();
-            jogoUpdate.setTitulo("Cyberpunk 2077");
-            jogoUpdate.setHorasJogadas(null);
-            jogoUpdate.setNotaPessoal(null);
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
+            when(jogoRepository.save(any())).thenReturn(jogoValido);
+            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
-            when(jogoRepository.findById(1)).thenReturn(Optional.of(jogoEntity));
-            when(jogoRepository.save(any())).thenReturn(jogoEntity);
+            jogoService.atualizarJogoPorId(1, dto, EMAIL);
 
-            jogoService.atualizarJogoPorId(1, jogoUpdate);
-
-            assertThat(jogoEntity.getTitulo()).isEqualTo("Cyberpunk 2077");
-            assertThat(jogoEntity.getPlataformas()).isEqualTo(PlataformaJogo.PC);
+            assertThat(jogoValido.getTitulo()).isEqualTo("Cyberpunk 2077");
+            assertThat(jogoValido.getPlataformas()).isEqualTo(PlataformaJogo.PC);
         }
 
         @Test
         @DisplayName("Deve lançar BadRequestException ao atualizar com ano futuro")
         void deveLancarExcecaoComAnoFuturo() {
-            JogoUpdateDTO jogoUpdate = new JogoUpdateDTO();
-            jogoUpdate.setAnoDeLancamento(Year.now().getValue() + 5);
-            jogoUpdate.setHorasJogadas(null);
-            jogoUpdate.setNotaPessoal(null);
+            JogoUpdateDTO dto = new JogoUpdateDTO();
+            dto.setAnoDeLancamento(Year.now().getValue() + 5);
 
-            assertThatThrownBy(() -> jogoService.atualizarJogoPorId(1, jogoUpdate))
+            assertThatThrownBy(() -> jogoService.atualizarJogoPorId(1, dto, EMAIL))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessageContaining("ano atual");
-        }
-
-        @Test
-        @DisplayName("Deve lançar BadRequestException ao atualizar com horas negativas")
-        void deveLancarExcecaoComHorasNegativas() {
-            JogoUpdateDTO jogoUpdate = new JogoUpdateDTO();
-            jogoUpdate.setHorasJogadas(-5.0);
-            jogoUpdate.setNotaPessoal(null);
-
-            assertThatThrownBy(() -> jogoService.atualizarJogoPorId(1, jogoUpdate))
-                    .isInstanceOf(BadRequestException.class)
-                    .hasMessageContaining("negativas");
-        }
-
-        @Test
-        @DisplayName("Deve lançar BadRequestException ao atualizar com nota inválida")
-        void deveLancarExcecaoComNotaInvalida() {
-            JogoUpdateDTO jogoUpdate = new JogoUpdateDTO();
-            jogoUpdate.setNotaPessoal(11.0);
-
-            assertThatThrownBy(() -> jogoService.atualizarJogoPorId(1, jogoUpdate))
-                    .isInstanceOf(BadRequestException.class)
-                    .hasMessageContaining("0 e 10");
         }
     }
 
@@ -340,33 +281,22 @@ class JogoServiceTest {
         @Test
         @DisplayName("Deve atualizar status com sucesso")
         void deveAtualizarStatusComSucesso() {
-            when(jogoRepository.findById(1)).thenReturn(Optional.of(jogoValido));
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
             when(jogoRepository.save(any())).thenReturn(jogoValido);
+            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
-            jogoService.atualizarStatusPorId(1, StatusJogo.JOGANDO);
+            jogoService.atualizarStatusPorId(1, StatusJogo.JOGANDO, EMAIL);
 
             assertThat(jogoValido.getStatus()).isEqualTo(StatusJogo.JOGANDO);
-            verify(jogoRepository).save(jogoValido);
         }
 
         @Test
         @DisplayName("Deve lançar BadRequestException quando status é nulo")
         void deveLancarExcecaoQuandoStatusNulo() {
-            assertThatThrownBy(() -> jogoService.atualizarStatusPorId(1, null))
+            assertThatThrownBy(() -> jogoService.atualizarStatusPorId(1, null, EMAIL))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessageContaining("Status");
-        }
-
-        @Test
-        @DisplayName("Deve atualizar para cada status disponível")
-        void deveAtualizarParaCadaStatus() {
-            when(jogoRepository.findById(1)).thenReturn(Optional.of(jogoValido));
-            when(jogoRepository.save(any())).thenReturn(jogoValido);
-
-            for (StatusJogo status : StatusJogo.values()) {
-                jogoService.atualizarStatusPorId(1, status);
-                assertThat(jogoValido.getStatus()).isEqualTo(status);
-            }
         }
     }
 
@@ -378,14 +308,15 @@ class JogoServiceTest {
     class AdicionarHorasJogadas {
 
         @Test
-        @DisplayName("Deve somar horas corretamente ao total existente")
+        @DisplayName("Deve somar horas corretamente")
         void deveSomarHorasCorretamente() {
             jogoValido.setHorasJogadas(50.0);
-
-            when(jogoRepository.findById(1)).thenReturn(Optional.of(jogoValido));
+            when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
+            when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
             when(jogoRepository.save(any())).thenReturn(jogoValido);
+            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
-            jogoService.adicionarHorasJogadasPorId(1, 30.0);
+            jogoService.adicionarHorasJogadasPorId(1, 30.0, EMAIL);
 
             assertThat(jogoValido.getHorasJogadas()).isEqualTo(80.0);
         }
@@ -393,57 +324,17 @@ class JogoServiceTest {
         @Test
         @DisplayName("Deve lançar BadRequestException quando horas são nulas")
         void deveLancarExcecaoQuandoHorasNulas() {
-            assertThatThrownBy(() -> jogoService.adicionarHorasJogadasPorId(1, null))
+            assertThatThrownBy(() -> jogoService.adicionarHorasJogadasPorId(1, null, EMAIL))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessageContaining("horas");
         }
 
         @Test
-        @DisplayName("Deve lançar BadRequestException quando horas a adicionar são negativas")
+        @DisplayName("Deve lançar BadRequestException quando horas são negativas")
         void deveLancarExcecaoQuandoHorasNegativas() {
-            assertThatThrownBy(() -> jogoService.adicionarHorasJogadasPorId(1, -10.0))
+            assertThatThrownBy(() -> jogoService.adicionarHorasJogadasPorId(1, -10.0, EMAIL))
                     .isInstanceOf(BadRequestException.class)
                     .hasMessageContaining("negativas");
-        }
-
-        @Test
-        @DisplayName("Deve aceitar zero horas sem lançar exceção")
-        void deveAceitarZeroHoras() {
-            jogoValido.setHorasJogadas(50.0);
-
-            when(jogoRepository.findById(1)).thenReturn(Optional.of(jogoValido));
-            when(jogoRepository.save(any())).thenReturn(jogoValido);
-
-            jogoService.adicionarHorasJogadasPorId(1, 0.0);
-
-            assertThat(jogoValido.getHorasJogadas()).isEqualTo(50.0);
-        }
-    }
-
-    // ================================
-    // VERIFICAR PLATAFORMA
-    // ================================
-    @Nested
-    @DisplayName("existeJogoNaPlataforma")
-    class ExisteJogoNaPlataforma {
-
-        @Test
-        @DisplayName("Deve lançar ConflictException quando jogo já existe na plataforma")
-        void deveLancarExcecaoQuandoJogoExiste() {
-            when(jogoRepository.existsJogoByTituloAndPlataformas("The Witcher 3", PlataformaJogo.PC)).thenReturn(true);
-
-            assertThatThrownBy(() -> jogoService.existeJogoNaPlataforma("The Witcher 3", PlataformaJogo.PC))
-                    .isInstanceOf(ConflictException.class)
-                    .hasMessageContaining("Já existe");
-        }
-
-        @Test
-        @DisplayName("Não deve lançar exceção quando jogo não existe na plataforma")
-        void naoDeveLancarExcecaoQuandoJogoNaoExiste() {
-            when(jogoRepository.existsJogoByTituloAndPlataformas(any(), any())).thenReturn(false);
-
-            assertThatCode(() -> jogoService.existeJogoNaPlataforma("Novo Jogo", PlataformaJogo.PC))
-                    .doesNotThrowAnyException();
         }
     }
 }

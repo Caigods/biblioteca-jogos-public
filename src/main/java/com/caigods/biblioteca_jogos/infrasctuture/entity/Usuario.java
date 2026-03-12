@@ -5,11 +5,12 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table (name ="usuarios")
+@Table(name = "usuarios")
 public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,11 +19,14 @@ public class Usuario implements UserDetails {
     @Column(name = "nome", length = 100)
     private String nome;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email", length = 100, unique = true)
     private String email;
 
-    @Column(name="senha")
+    @Column(name = "senha")
     private String senha;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Jogo> jogos = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -40,16 +44,17 @@ public class Usuario implements UserDetails {
     }
 
 
-    public Usuario(){
+    public Usuario() {
 
     }
 
-    public Usuario(Integer id, String nome, String email, String senha){
+    public Usuario(Integer id, String nome, String email, String senha) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
     }
+
     //Getters and Setters
     public Integer getId() {
         return id;
@@ -82,5 +87,9 @@ public class Usuario implements UserDetails {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
+    public List<Jogo> getJogos() {return jogos;}
+
+    public void setJogos(List<Jogo> jogos) {this.jogos = jogos;}
 
 }

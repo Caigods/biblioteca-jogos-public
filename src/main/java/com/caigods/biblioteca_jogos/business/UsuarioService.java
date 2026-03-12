@@ -41,6 +41,7 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponseDTO salvarUsuario(UsuarioRequestDTO dto) {
         emailExiste(dto.getEmail());
+        dto.setEmail(dto.getEmail().toLowerCase());
         Usuario usuario = usuarioMapper.toEntity(dto);
         usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         Usuario salvo = usuarioRepository.save(usuario);
@@ -54,14 +55,14 @@ public class UsuarioService {
     }
 
     public UsuarioResponseDTO buscarPorEmail(String email) {
-        Usuario usuario = usuarioRepository.findByEmailContainingIgnoreCase(email)
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Email não encontrado: " + email));
         return usuarioMapper.toResponseDTO(usuario);
     }
 
     @Transactional
     public void deletarUsuarioPorEmail(String email) {
-        Usuario usuario = usuarioRepository.findByEmailContainingIgnoreCase(email)
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new NotFoundException("Usuário nao encontrado: " + email));
         usuarioRepository.delete(usuario);

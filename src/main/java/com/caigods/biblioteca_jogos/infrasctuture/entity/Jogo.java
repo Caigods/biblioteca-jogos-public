@@ -47,19 +47,13 @@ public class Jogo {
     private Double horasJogadas;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
 
     //Constructor vazio
     public Jogo() {
         //Deixar um valor por padrao
-        this.id = id;
-        this.titulo = titulo;
-        this.plataformas = plataformas;
-        this.genero = genero;
-        this.anoDeLancamento = anoDeLancamento;
-        this.status = status;
         this.horasJogadas = 0.0;
         this.notaPessoal = 0.0;
 
@@ -68,7 +62,7 @@ public class Jogo {
     //Constructor com todos os argumentos
     public Jogo(Integer id, String titulo, PlataformaJogo plataformas,
                 String genero, Integer anoDeLancamento, StatusJogo status,
-                Double notaPessoal, Double horasJogadas) {
+                Double notaPessoal, Double horasJogadas, Usuario usuario) {
         this.id = id;
         this.titulo = titulo;
         this.plataformas = plataformas;
@@ -77,6 +71,7 @@ public class Jogo {
         this.status = status;
         this.notaPessoal = notaPessoal;
         this.horasJogadas = horasJogadas;
+        this.usuario = usuario;
 
     }
 
@@ -145,5 +140,9 @@ public class Jogo {
     public void setPlataformas(PlataformaJogo plataformas) {
         this.plataformas = plataformas;
     }
+
+    public Usuario getUsuario() {return usuario;}
+
+    public void setUsuario(Usuario usuario) {this.usuario = usuario;}
 
 }
