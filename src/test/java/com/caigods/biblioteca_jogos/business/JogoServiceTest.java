@@ -263,7 +263,7 @@ class JogoServiceTest {
         @DisplayName("Deve lançar BadRequestException ao atualizar com ano futuro")
         void deveLancarExcecaoComAnoFuturo() {
             JogoUpdateDTO dto = new JogoUpdateDTO();
-            dto.setAnoDeLancamento(Year.now().getValue() + 5);
+            dto.setAnoDeLancamento(Year.now().getValue() + 1);
 
             assertThatThrownBy(() -> jogoService.atualizarJogoPorId(1, dto, EMAIL))
                     .isInstanceOf(BadRequestException.class)
