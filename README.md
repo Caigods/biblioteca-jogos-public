@@ -99,8 +99,13 @@ POST /usuario/login
 
 
 Logo após o login copie o token retornado SEM o Bearer ex:(Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE3NzMzNzIyMzQsImV4cCI6MTc3MzM3NTgzNH0.jr0gN3ywUX4h0tu-0PDG8psW3CWruTDfXr9U17M9Oe0).
+
+
 Clique no botão **Authorize 🔒** no Swagger(Superior direito na página) e cole o token.
+
+
 Caso queira testar sem cadastro, use o login a seguir.
+
 ```json
 POST /usuario/login
 {
