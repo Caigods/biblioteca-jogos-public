@@ -82,8 +82,8 @@ A API utiliza autenticação **Bearer JWT**. Para acessar os endpoints protegido
 ```json
 POST /usuario
 {
-  "nome": "Caio",
-  "email": "caio@email.com",
+  "nome": "Caigods",
+  "email": "caigods@email.com",
   "senha": "senha123"
 }
 ```
@@ -92,8 +92,20 @@ POST /usuario
 ```json
 POST /usuario/login
 {
-  "email": "caio@email.com",
+  "email": "caigods@email.com",
   "senha": "senha123"
+}
+```
+
+
+Logo após o login copie o token retornado SEM o Bearer ex:(Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE3NzMzNzIyMzQsImV4cCI6MTc3MzM3NTgzNH0.jr0gN3ywUX4h0tu-0PDG8psW3CWruTDfXr9U17M9Oe0).
+Clique no botão **Authorize 🔒** no Swagger(Superior direito na página) e cole o token.
+Caso queira testar sem cadastro, use o login a seguir.
+```json
+POST /usuario/login
+{
+  "email": "admin@admin.com",
+  "senha": "admin"
 }
 ```
 
@@ -103,7 +115,7 @@ POST /jogos
 {
   "titulo": "The Witcher 3",
   "plataformas": "PC",
-  "genero": "RPG",
+  "genero": "RPG; Aventura; Medieval",
   "anoDeLancamento": 2015,
   "status": "ZERADO",
   "notaPessoal": 9.5,
@@ -159,6 +171,30 @@ DROPADO   → jogo abandonado
 QUEUE     → na fila para jogar
 ```
 
+### Atualizar jogo
+É possivel fazer um PUT "parcial", caso não mande todos os valores do objeto, ele atualiza apenas o que foi enviado no JSON, sem perder o que existia antes.
+EXEMPLO:
+```json
+PUT /jogos/{id}
+{
+  "genero": "RPG; Aventura; Medieval; Fantasia",
+  "status": "JOGANDO"
+}
+```
+Resultado após o PUT "parcial" anterior. 
+
+```json
+{
+  "id": 1,
+  "titulo": "The Witcher 3",
+  "plataformas": "PC",
+  "genero": "RPG; Aventura; Medieval; Fantasia",
+  "anoDeLancamento": 2015,
+  "status": "JOGANDO",
+  "notaPessoal": 9.5,
+  "horasJogadas": 120
+}
+```
 ---
 
 ## ▶️ Como rodar localmente
