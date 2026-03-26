@@ -82,10 +82,21 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5174"));
-        config.setAllowedOrigins(List.of("https://*.up.railway.app"));
+
+        // 1. Use setAllowedOriginPatterns para suportar wildcards (*) com Credentials
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:5174",           // Seu Frontend local (Vite/React?)
+                "https://*.up.railway.app",        // Qualquer subdomínio no Railway
+                "https://biblioteca-jogos-*.up.railway.app" // Origem específica do seu projeto
+        ));
+
+        // 2. Métodos permitidos
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+
+        // 3. Headers permitidos (O "*" aqui é seguro)
         config.setAllowedHeaders(List.of("*"));
+
+        // 4. Permitir envio de Cookies/Tokens (Necessário para o seu JWT no futuro)
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
