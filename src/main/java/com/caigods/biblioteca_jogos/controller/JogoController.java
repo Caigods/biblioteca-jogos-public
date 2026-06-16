@@ -1,8 +1,8 @@
 package com.caigods.biblioteca_jogos.controller;
 
 import com.caigods.biblioteca_jogos.business.JogoService;
-import com.caigods.biblioteca_jogos.dto.JogoRequestDTO;
-import com.caigods.biblioteca_jogos.dto.JogoResponseDTO;
+import com.caigods.biblioteca_jogos.dto.in.JogoRequestDTO;
+import com.caigods.biblioteca_jogos.dto.out.JogoResponseDTO;
 import com.caigods.biblioteca_jogos.dto.JogoUpdateDTO;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;

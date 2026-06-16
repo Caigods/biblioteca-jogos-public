@@ -1,4 +1,4 @@
-package com.caigods.biblioteca_jogos.dto;
+package com.caigods.biblioteca_jogos.dto.out;
 
 public class UsuarioResponseDTO {
     private Integer id;

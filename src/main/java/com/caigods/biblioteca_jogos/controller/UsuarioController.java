@@ -2,8 +2,8 @@ package com.caigods.biblioteca_jogos.controller;
 
 import com.caigods.biblioteca_jogos.business.UsuarioService;
 import com.caigods.biblioteca_jogos.dto.UsuarioLoginDTO;
-import com.caigods.biblioteca_jogos.dto.UsuarioRequestDTO;
-import com.caigods.biblioteca_jogos.dto.UsuarioResponseDTO;
+import com.caigods.biblioteca_jogos.dto.in.UsuarioRequestDTO;
+import com.caigods.biblioteca_jogos.dto.out.UsuarioResponseDTO;
 import com.caigods.biblioteca_jogos.infrasctuture.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

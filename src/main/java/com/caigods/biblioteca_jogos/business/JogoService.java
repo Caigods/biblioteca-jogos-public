@@ -1,7 +1,7 @@
 package com.caigods.biblioteca_jogos.business;
 
-import com.caigods.biblioteca_jogos.dto.JogoRequestDTO;
-import com.caigods.biblioteca_jogos.dto.JogoResponseDTO;
+import com.caigods.biblioteca_jogos.dto.in.JogoRequestDTO;
+import com.caigods.biblioteca_jogos.dto.out.JogoResponseDTO;
 import com.caigods.biblioteca_jogos.dto.JogoUpdateDTO;
 import com.caigods.biblioteca_jogos.exception.BadRequestException;
 import com.caigods.biblioteca_jogos.exception.ConflictException;

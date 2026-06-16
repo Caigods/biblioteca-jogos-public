@@ -1,7 +1,7 @@
 package com.caigods.biblioteca_jogos.mapper;
 
-import com.caigods.biblioteca_jogos.dto.UsuarioRequestDTO;
-import com.caigods.biblioteca_jogos.dto.UsuarioResponseDTO;
+import com.caigods.biblioteca_jogos.dto.in.UsuarioRequestDTO;
+import com.caigods.biblioteca_jogos.dto.out.UsuarioResponseDTO;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.Usuario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
