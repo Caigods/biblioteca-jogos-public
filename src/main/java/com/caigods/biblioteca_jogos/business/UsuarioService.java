@@ -2,11 +2,11 @@ package com.caigods.biblioteca_jogos.business;
 
 import com.caigods.biblioteca_jogos.dto.in.UsuarioRequestDTO;
 import com.caigods.biblioteca_jogos.dto.out.UsuarioResponseDTO;
+import com.caigods.biblioteca_jogos.business.converter.UsuarioConverter;
 import com.caigods.biblioteca_jogos.exception.ConflictException;
 import com.caigods.biblioteca_jogos.exception.NotFoundException;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.Usuario;
 import com.caigods.biblioteca_jogos.infrasctuture.repository.UsuarioRepository;
-import com.caigods.biblioteca_jogos.mapper.UsuarioMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,12 +18,12 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UsuarioMapper usuarioMapper;
+    private final UsuarioConverter usuarioConverter;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, UsuarioMapper usuarioMapper) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, UsuarioConverter usuarioConverter) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
-        this.usuarioMapper = usuarioMapper;
+        this.usuarioConverter = usuarioConverter;
     }
 
     public List<UsuarioResponseDTO> listaUsuarios() {
@@ -33,7 +33,7 @@ public class UsuarioService {
         }
         return usuarios
                 .stream()
-                .map(usuarioMapper::toResponseDTO)
+                .map(usuarioConverter::toResponseDTO)
                 .toList();
     }
 
@@ -42,22 +42,22 @@ public class UsuarioService {
     public UsuarioResponseDTO salvarUsuario(UsuarioRequestDTO dto) {
         emailExiste(dto.getEmail());
         dto.setEmail(dto.getEmail().toLowerCase());
-        Usuario usuario = usuarioMapper.toEntity(dto);
+        Usuario usuario = usuarioConverter.toEntity(dto);
         usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         Usuario salvo = usuarioRepository.save(usuario);
-        return usuarioMapper.toResponseDTO(salvo);
+        return usuarioConverter.toResponseDTO(salvo);
     }
 
     public UsuarioResponseDTO buscarPorId(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado no id de numero " + id));
-        return usuarioMapper.toResponseDTO(usuario);
+        return usuarioConverter.toResponseDTO(usuario);
     }
 
     public UsuarioResponseDTO buscarPorEmail(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Email não encontrado: " + email));
-        return usuarioMapper.toResponseDTO(usuario);
+        return usuarioConverter.toResponseDTO(usuario);
     }
 
     @Transactional

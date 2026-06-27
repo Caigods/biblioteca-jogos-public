@@ -3,6 +3,7 @@ package com.caigods.biblioteca_jogos.business;
 import com.caigods.biblioteca_jogos.dto.in.JogoRequestDTO;
 import com.caigods.biblioteca_jogos.dto.out.JogoResponseDTO;
 import com.caigods.biblioteca_jogos.dto.JogoUpdateDTO;
+import com.caigods.biblioteca_jogos.business.converter.JogoConverter;
 import com.caigods.biblioteca_jogos.exception.BadRequestException;
 import com.caigods.biblioteca_jogos.exception.ConflictException;
 import com.caigods.biblioteca_jogos.exception.NotFoundException;
@@ -12,7 +13,6 @@ import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.repository.JogoRepository;
 import com.caigods.biblioteca_jogos.infrasctuture.repository.UsuarioRepository;
-import com.caigods.biblioteca_jogos.mapper.JogoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +39,7 @@ class JogoServiceTest {
     private UsuarioRepository usuarioRepository;
 
     @Mock
-    private JogoMapper jogoMapper;
+    private JogoConverter jogoConverter;
 
     @InjectMocks
     private JogoService jogoService;
@@ -76,9 +76,9 @@ class JogoServiceTest {
         void deveSalvarJogoComDadosValidos() {
             when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
             when(jogoRepository.existsJogoByTituloAndPlataformasAndUsuario(any(), any(), any())).thenReturn(false);
-            when(jogoMapper.toEntity(dtoValido)).thenReturn(jogoValido);
+            when(jogoConverter.toEntity(dtoValido)).thenReturn(jogoValido);
             when(jogoRepository.save(any())).thenReturn(jogoValido);
-            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
+            when(jogoConverter.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
             JogoResponseDTO resultado = jogoService.salvarJogo(dtoValido, EMAIL);
 
@@ -156,7 +156,7 @@ class JogoServiceTest {
         void deveRetornarListaDeJogos() {
             when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
             when(jogoRepository.findByUsuario(usuarioValido)).thenReturn(List.of(jogoValido));
-            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
+            when(jogoConverter.toListResponseDTO(List.of(jogoValido))).thenReturn(List.of(responseValido));
 
             List<JogoResponseDTO> resultado = jogoService.listaJogos(EMAIL);
 
@@ -187,7 +187,7 @@ class JogoServiceTest {
         void deveRetornarJogoQuandoEncontrado() {
             when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
             when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
-            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
+            when(jogoConverter.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
             JogoResponseDTO resultado = jogoService.buscarPorId(1, EMAIL);
 
@@ -251,7 +251,7 @@ class JogoServiceTest {
             when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
             when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
             when(jogoRepository.save(any())).thenReturn(jogoValido);
-            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
+            when(jogoConverter.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
             jogoService.atualizarJogoPorId(1, dto, EMAIL);
 
@@ -284,7 +284,7 @@ class JogoServiceTest {
             when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
             when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
             when(jogoRepository.save(any())).thenReturn(jogoValido);
-            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
+            when(jogoConverter.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
             jogoService.atualizarStatusPorId(1, StatusJogo.JOGANDO, EMAIL);
 
@@ -314,7 +314,7 @@ class JogoServiceTest {
             when(usuarioRepository.findByEmail(EMAIL)).thenReturn(Optional.of(usuarioValido));
             when(jogoRepository.findByIdAndUsuario(1, usuarioValido)).thenReturn(Optional.of(jogoValido));
             when(jogoRepository.save(any())).thenReturn(jogoValido);
-            when(jogoMapper.toResponseDTO(jogoValido)).thenReturn(responseValido);
+            when(jogoConverter.toResponseDTO(jogoValido)).thenReturn(responseValido);
 
             jogoService.adicionarHorasJogadasPorId(1, 30.0, EMAIL);
 
