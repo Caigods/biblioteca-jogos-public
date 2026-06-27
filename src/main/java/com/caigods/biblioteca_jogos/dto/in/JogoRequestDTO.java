@@ -1,23 +1,29 @@
-package com.caigods.biblioteca_jogos.dto;
+package com.caigods.biblioteca_jogos.dto.in;
 
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public class JogoResponseDTO {
-    private Integer id;
+public class JogoRequestDTO {
+    @NotBlank
     private String titulo;
+
+    @NotNull
     private PlataformaJogo plataformas;
+
     private String genero;
+
     private Integer anoDeLancamento;
+
+    @NotNull
     private StatusJogo status;
+
     private Double notaPessoal;
+
     private Double horasJogadas;
 
-    public JogoResponseDTO() {
-    }
-
-    public JogoResponseDTO(Integer id, String titulo, PlataformaJogo plataformas, String genero, Integer anoDeLancamento, StatusJogo status, Double notaPessoal, Double horasJogadas) {
-        this.id = id;
+    public JogoRequestDTO(String titulo, PlataformaJogo plataformas, String genero, Integer anoDeLancamento, StatusJogo status, Double notaPessoal, Double horasJogadas) {
         this.titulo = titulo;
         this.plataformas = plataformas;
         this.genero = genero;
@@ -27,22 +33,11 @@ public class JogoResponseDTO {
         this.horasJogadas = horasJogadas;
     }
 
-    public Integer getId() {
-        return id;
+    public JogoRequestDTO() {
+
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
+    //GETTERS AND SETTERS
     public PlataformaJogo getPlataformas() {
         return plataformas;
     }
@@ -89,5 +84,13 @@ public class JogoResponseDTO {
 
     public void setHorasJogadas(Double horasJogadas) {
         this.horasJogadas = horasJogadas;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 }

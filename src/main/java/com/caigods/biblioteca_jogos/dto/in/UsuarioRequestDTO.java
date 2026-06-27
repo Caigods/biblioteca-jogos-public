@@ -1,4 +1,4 @@
-package com.caigods.biblioteca_jogos.dto;
+package com.caigods.biblioteca_jogos.dto.in;
 
 public class UsuarioRequestDTO {
     private String nome;

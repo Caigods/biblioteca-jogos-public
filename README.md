@@ -13,7 +13,7 @@ REST API para gerenciamento de biblioteca pessoal de jogos. Cada usuário possui
 - **Spring Security + JWT**
 - **Spring Data JPA / Hibernate**
 - **PostgreSQL**
-- **MapStruct**
+- **Conversores manuais de DTO**
 - **Springdoc OpenAPI (Swagger)**
 - **JUnit 5 + Mockito**
 - **Railway** (deploy)
@@ -268,7 +268,7 @@ src/main/java/com/caigods/biblioteca_jogos/
 │   ├── entity/         # Entidades JPA
 │   ├── repository/     # Repositórios Spring Data
 │   └── security/       # JWT, Security Config, Swagger
-└── mapper/             # Mappers MapStruct
+└── business/converter/ # Conversores manuais de DTO
 ```
 
 ---

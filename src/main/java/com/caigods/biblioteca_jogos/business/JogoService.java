@@ -1,8 +1,9 @@
 package com.caigods.biblioteca_jogos.business;
 
-import com.caigods.biblioteca_jogos.dto.JogoRequestDTO;
-import com.caigods.biblioteca_jogos.dto.JogoResponseDTO;
+import com.caigods.biblioteca_jogos.dto.in.JogoRequestDTO;
+import com.caigods.biblioteca_jogos.dto.out.JogoResponseDTO;
 import com.caigods.biblioteca_jogos.dto.JogoUpdateDTO;
+import com.caigods.biblioteca_jogos.business.converter.JogoConverter;
 import com.caigods.biblioteca_jogos.exception.BadRequestException;
 import com.caigods.biblioteca_jogos.exception.ConflictException;
 import com.caigods.biblioteca_jogos.exception.NotFoundException;
@@ -12,7 +13,6 @@ import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.PlataformaJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.entity.enums.StatusJogo;
 import com.caigods.biblioteca_jogos.infrasctuture.repository.JogoRepository;
 import com.caigods.biblioteca_jogos.infrasctuture.repository.UsuarioRepository;
-import com.caigods.biblioteca_jogos.mapper.JogoMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +24,12 @@ public class JogoService {
 
     private final JogoRepository jogoRepository;
     private final UsuarioRepository usuarioRepository;
-    private final JogoMapper jogoMapper;
+    private final JogoConverter jogoConverter;
 
-    public JogoService(JogoRepository jogoRepository, UsuarioRepository usuarioRepository, JogoMapper jogoMapper) {
+    public JogoService(JogoRepository jogoRepository, UsuarioRepository usuarioRepository, JogoConverter jogoConverter) {
         this.jogoRepository = jogoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.jogoMapper = jogoMapper;
+        this.jogoConverter = jogoConverter;
     }
 
     // Busca o usuário pelo email — usado em todos os métodos
@@ -45,7 +45,7 @@ public class JogoService {
         if (jogos.isEmpty()) {
             throw new NotFoundException("Nenhum jogo cadastrado");
         }
-        return jogos.stream().map(jogoMapper::toResponseDTO).toList();
+        return jogoConverter.toListResponseDTO(jogos);
     }
 
     public long listarQtdJogos(String email) {
@@ -61,7 +61,7 @@ public class JogoService {
     public List<JogoResponseDTO> listarNotaPessoalMinima(Double notaPessoal, String email) {
         validarNotaPessoal(notaPessoal);
         Usuario usuario = buscarUsuarioPorEmail(email);
-        return jogoRepository.findByNotaPessoalGreaterThanEqualAndUsuario(notaPessoal, usuario).stream().map(jogoMapper::toResponseDTO).toList();
+        return jogoConverter.toListResponseDTO(jogoRepository.findByNotaPessoalGreaterThanEqualAndUsuario(notaPessoal, usuario));
     }
 
     // SALVAR JOGO
@@ -73,15 +73,15 @@ public class JogoService {
         validarNotaPessoal(dto.getNotaPessoal());
         validarHorasNegativas(dto.getHorasJogadas());
 
-        Jogo jogo = jogoMapper.toEntity(dto);
+        Jogo jogo = jogoConverter.toEntity(dto);
         jogo.setUsuario(usuario);
-        return jogoMapper.toResponseDTO(jogoRepository.save(jogo));
+        return jogoConverter.toResponseDTO(jogoRepository.save(jogo));
     }
 
     // BUSCAS
     public JogoResponseDTO buscarPorId(Integer id, String email) {
         Usuario usuario = buscarUsuarioPorEmail(email);
-        return jogoMapper.toResponseDTO(jogoRepository.findByIdAndUsuario(id, usuario)
+        return jogoConverter.toResponseDTO(jogoRepository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> new NotFoundException("Jogo não encontrado")));
     }
 
@@ -91,7 +91,7 @@ public class JogoService {
         if (jogos.isEmpty()) {
             throw new NotFoundException("Nenhum jogo encontrado com o título: " + titulo);
         }
-        return jogos.stream().map(jogoMapper::toResponseDTO).toList();
+        return jogoConverter.toListResponseDTO(jogos);
     }
 
     public List<JogoResponseDTO> buscarPorPlataformas(PlataformaJogo plataformas, String email) {
@@ -100,7 +100,7 @@ public class JogoService {
         if (jogos.isEmpty()) {
             throw new NotFoundException("Nenhum jogo encontrado para a plataforma: " + plataformas);
         }
-        return jogos.stream().map(jogoMapper::toResponseDTO).toList();
+        return jogoConverter.toListResponseDTO(jogos);
     }
 
     public List<JogoResponseDTO> buscarPorGenero(String genero, String email) {
@@ -109,7 +109,7 @@ public class JogoService {
         if (jogos.isEmpty()) {
             throw new NotFoundException("Nenhum jogo encontrado com o gênero: " + genero);
         }
-        return jogos.stream().map(jogoMapper::toResponseDTO).toList();
+        return jogoConverter.toListResponseDTO(jogos);
     }
 
     public List<JogoResponseDTO> buscarPorStatus(StatusJogo status, String email) {
@@ -118,7 +118,7 @@ public class JogoService {
         if (jogos.isEmpty()) {
             throw new NotFoundException("Nenhum jogo encontrado com o status: " + status);
         }
-        return jogos.stream().map(jogoMapper::toResponseDTO).toList();
+        return jogoConverter.toListResponseDTO(jogos);
     }
 
     public List<JogoResponseDTO> buscarPorNotaPessoal(Double notaPessoal, String email) {
@@ -128,7 +128,7 @@ public class JogoService {
         if (jogos.isEmpty()) {
             throw new NotFoundException("Nenhum jogo encontrado com a nota: " + notaPessoal);
         }
-        return jogos.stream().map(jogoMapper::toResponseDTO).toList();
+        return jogoConverter.toListResponseDTO(jogos);
     }
 
     // DELETAR
@@ -156,7 +156,7 @@ public class JogoService {
         if (dto.getNotaPessoal() != null) jogoEntity.setNotaPessoal(dto.getNotaPessoal());
         if (dto.getHorasJogadas() != null) jogoEntity.setHorasJogadas(dto.getHorasJogadas());
 
-        return jogoMapper.toResponseDTO(jogoRepository.save(jogoEntity));
+        return jogoConverter.toResponseDTO(jogoRepository.save(jogoEntity));
     }
 
     @Transactional
@@ -167,7 +167,7 @@ public class JogoService {
         Usuario usuario = buscarUsuarioPorEmail(email);
         Jogo jogoEntity = buscarEntityPorId(id, usuario);
         jogoEntity.setStatus(statusJogo);
-        return jogoMapper.toResponseDTO(jogoRepository.save(jogoEntity));
+        return jogoConverter.toResponseDTO(jogoRepository.save(jogoEntity));
     }
 
     @Transactional
@@ -179,7 +179,7 @@ public class JogoService {
         Usuario usuario = buscarUsuarioPorEmail(email);
         Jogo jogoEntity = buscarEntityPorId(id, usuario);
         jogoEntity.setHorasJogadas(jogoEntity.getHorasJogadas() + horasJogadas);
-        return jogoMapper.toResponseDTO(jogoRepository.save(jogoEntity));
+        return jogoConverter.toResponseDTO(jogoRepository.save(jogoEntity));
     }
 
     // VALIDAÇÕES
