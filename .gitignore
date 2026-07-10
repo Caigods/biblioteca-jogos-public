@@ -1,6 +1,13 @@
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
+backend/HELP.md
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
 !**/src/main/**/target/
 !**/src/test/**/target/
 
