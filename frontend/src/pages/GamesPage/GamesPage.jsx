@@ -1,28 +1,28 @@
 import './GamesPage.css'
+import UserProfile from '../../components/profile/UserProfile/UserProfile.jsx'
+import StatsPanel from '../../components/stats/StatsPanel/StatsPanel.jsx'
+import GamesFilters from '../../components/games/GamesFilters/GamesFilters.jsx'
+import GamesGrid from '../../components/games/GamesGrid/GamesGrid.jsx'
 
 function GamesPage() {
-  return (
-    <main className="games-page">
-      <header className="games-header">
-        <div>
-          <span className="games-brand">YGC</span>
-          <h1>Minha biblioteca</h1>
-        </div>
+    return (
+        <main className="games-page">
+            <section className="games-top">
+                <UserProfile />
+                <StatsPanel/> {/*Dentro terá o StatCard*/}
+            </section>
 
-        <button type="button" className="new-game-button">
-          Novo jogo
-        </button>
-      </header>
+            <section className="games-content">
+                <h2>GamesPage</h2>
+                <GamesFilters/>
+                <GamesGrid /> {/*Dentro terá o GameCard*/}
 
-      <section className="games-content">
-        <h2>GamesPage</h2>
-        <p>Essa sera a pagina principal depois do login.</p>
-      </section>
-        <label>
 
-        </label>
-    </main>
-  )
+                <p>Essa sera a pagina principal depois do login.</p>
+            </section>
+
+        </main>
+    )
 }
 
 export default GamesPage
