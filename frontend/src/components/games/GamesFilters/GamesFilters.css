@@ -1,1 +1,61 @@
+.games-filters {
+  display: grid;
+  gap: 16px;
+}
 
+.games-filters-title {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.games-filters-form {
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+
+.games-filters-form label {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.games-filters-form input,
+.games-filters-form select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 10px;
+  color: #111827;
+  background: #ffffff;
+  font: inherit;
+  font-size: 14px;
+}
+
+.games-filters-form select {
+  cursor: pointer;
+}
+
+.games-filters-button,
+.games-filters-clear-button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.games-filters-button {
+  margin-top: 8px;
+  color: #ffffff;
+  background: #2563eb;
+}
+
+.games-filters-clear-button {
+  color: #334155;
+  background: #e2e8f0;
+}

@@ -1,1 +1,40 @@
+.game-card {
 
+    min-height: 320px;
+    border: 1px solid #d8dee9;
+    border-radius: 8px;
+    padding: 16px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    text-align: center;
+    gap: 16px;
+}
+
+.game-card-cover {
+    display: grid;
+    place-items: center;
+    min-height: 120px;
+    border-radius: 6px;
+    background: #e0ecff;
+    color: #2563eb;
+    font-size: 32px;
+    font-weight: 800;
+    aspect-ratio: 2 / 3;
+    width: 100%;
+    overflow: hidden;
+}
+
+.card-game-name {
+    padding-top: 15px;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+.card-game-dados {
+    font-size: 12px;
+}
+.game-card-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

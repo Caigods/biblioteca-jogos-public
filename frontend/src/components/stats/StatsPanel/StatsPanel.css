@@ -1,5 +1,6 @@
 .painel-estatisticas {
     display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 100px;
+    grid-template-columns: repeat(4,max-content);
+    gap: 60px;
+    margin-left: 100px;
 }
