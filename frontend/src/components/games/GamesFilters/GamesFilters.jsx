@@ -4,6 +4,21 @@ const statusOptions = ['JOGANDO', 'ZERADO', 'DROPADO', 'QUEUE']
 
 const platformOptions = [
   'PC',
+  'PLAYSTATION_1',
+  'PLAYSTATION_2',
+  'PLAYSTATION_3',
+  'PLAYSTATION_4',
+  'PLAYSTATION_5',
+  'XBOX',
+  'XBOX_360',
+  'XBOX_ONE',
+  'XBOX_SERIES_X',
+  'XBOX_SERIES_S',
+  'NINTENDO_64',
+  'WII',
+  'WII_U',
+  'NINTENDO_SWITCH',
+  'NINTENDO_SWITCH_2',
   'MAGNAVOX_ODYSSEY',
   'ATARI_2600',
   'COLECOVISION',
@@ -15,24 +30,10 @@ const platformOptions = [
   'MEGA_DRIVE',
   'NEO_GEO',
   'TURBOGRAFX_16',
-  'PLAYSTATION_1',
-  'NINTENDO_64',
   'SEGA_SATURN',
   'IM_3D0',
-  'PLAYSTATION_2',
   'DREAMCAST',
   'GAMECUBE',
-  'XBOX',
-  'PLAYSTATION_3',
-  'XBOX_360',
-  'WII',
-  'PLAYSTATION_4',
-  'XBOX_ONE',
-  'WII_U',
-  'NINTENDO_SWITCH',
-  'PLAYSTATION_5',
-  'XBOX_SERIES_X',
-  'XBOX_SERIES_S',
   'GAME_BOY',
   'GAME_GEAR',
   'PSP',
@@ -84,7 +85,7 @@ function GamesFilters() {
         </select>
 
         <button type="button" className="games-filters-button">
-          Aplicar
+          Filtrar
         </button>
 
         <button type="button" className="games-filters-clear-button">

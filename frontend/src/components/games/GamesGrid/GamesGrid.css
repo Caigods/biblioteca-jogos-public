@@ -1,5 +1,5 @@
 .games-grid{
-    max-height: 520px;
+    max-height: 640px;
     overflow-y: auto;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
