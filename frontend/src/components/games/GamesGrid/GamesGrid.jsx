@@ -74,6 +74,33 @@ const jogosTeste = [
     notaPessoal: 8.5,
     horasJogadas: '80h',
   },
+  {
+    id: 9,
+    tituloJogo: 'Stardew Valley',
+    plataforma: 'NINTENDO_SWITCH',
+    genero: 'Simulacao',
+    statusJogo: 'JOGANDO',
+    notaPessoal: 8.5,
+    horasJogadas: '80h',
+  },
+  {
+    id: 10,
+    tituloJogo: 'Stardew Valley',
+    plataforma: 'NINTENDO_SWITCH',
+    genero: 'Simulacao',
+    statusJogo: 'JOGANDO',
+    notaPessoal: 8.5,
+    horasJogadas: '80h',
+  },
+  {
+    id: 8,
+    tituloJogo: 'Stardew Valley',
+    plataforma: 'NINTENDO_SWITCH',
+    genero: 'Simulacao',
+    statusJogo: 'JOGANDO',
+    notaPessoal: 8.5,
+    horasJogadas: '80h',
+  },
 ]
 
 function GamesGrid() {

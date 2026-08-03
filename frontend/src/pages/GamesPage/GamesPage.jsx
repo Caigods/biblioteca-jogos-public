@@ -5,24 +5,30 @@ import GamesFilters from '../../components/games/GamesFilters/GamesFilters.jsx'
 import GamesGrid from '../../components/games/GamesGrid/GamesGrid.jsx'
 
 function GamesPage() {
-    return (
-        <main className="games-page">
-            <section className="games-top">
-                <UserProfile/>
-                <StatsPanel/> {/*Dentro terá o StatCard*/}
-            </section>
-            <div className="grid-content">
-                <article className="search-filter">
-                    <GamesFilters/>
-                </article>
-                <section className="games-content">
-                    <h1 className="games-header">Biblioteca</h1>
-                    <GamesGrid/> {/*Dentro terá o GameCard*/}
-                </section>
-            </div>
+  return (
+    <main className="games-page">
+      <section className="games-top">
+        <div className="games-profile-area">
+          <UserProfile />
+        </div>
 
-        </main>
-    )
+        <div className="games-stats-area">
+          <StatsPanel /> {/* Dentro tera o StatCard */}
+        </div>
+      </section>
+
+      <div className="grid-content">
+        <article className="search-filter">
+          <GamesFilters />
+        </article>
+
+        <section className="games-content">
+          <h1 className="games-header">Biblioteca</h1>
+          <GamesGrid /> {/* Dentro tera o GameCard */}
+        </section>
+      </div>
+    </main>
+  )
 }
 
 export default GamesPage

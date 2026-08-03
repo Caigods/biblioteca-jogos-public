@@ -1,16 +1,22 @@
 .games-page {
   min-height: 100vh;
-  padding: 32px;
+  padding: 24px 32px;
   background: #f3f6fb;
 }
 
 .games-top {
-  width: min(1120px, 100%);
-  margin: 150px 100px 100px 12%;
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 16px;
-  align-items: stretch;
+  display: flex;
+  width: 100%;
+  margin: 24px 0;
+  align-items: center;
+}
+
+.games-profile-area {
+  margin-left: 40px;
+}
+
+.games-stats-area {
+  margin-left: 200px;
 }
 
 .games-header {
@@ -21,8 +27,9 @@
 
 
 .search-filter{
-  border: 1px solid #d8dee9;
-  border-radius: 8px;
+
+  border: 2px solid #d8dee9;
+  border-radius: 16px;
   padding: 24px;
   background: #ffffff;
   align-items: center;
@@ -34,15 +41,15 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: 15% 1fr;
-  gap: 16px;
   align-items: start;
+  overflow-y: auto;
 }
 
 .games-content {
   min-width: 0;
   border: 2px solid #d8dee9;
   border-radius: 16px;
-  padding: 24px;
+  padding: 16px;
   background: #ffffff;
 }
 
