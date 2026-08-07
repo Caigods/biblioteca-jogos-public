@@ -1,0 +1,22 @@
+.app-logo {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  text-decoration: none;
+}
+
+.app-logo__image {
+  display: block;
+  width: 120px;
+  height: auto;
+  border: 2px solid #bfc0c1;
+  border-radius: 16px;
+}
+.app-logo-sigla{
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: darkgray;
+  margin-left: 15px;
+  font-size: 56px;
+  align-items: center;
+  color: #bfc0c1;
+}

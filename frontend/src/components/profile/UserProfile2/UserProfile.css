@@ -1,0 +1,14 @@
+.userProfile{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.icone{
+    border-radius: 100%;
+    object-fit: cover;
+}
+.user_name{
+    margin: 0;
+    font-size: 24px;
+    color:#bfc0c1 ;
+}
