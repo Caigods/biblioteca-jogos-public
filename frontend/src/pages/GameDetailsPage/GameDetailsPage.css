@@ -1,1 +1,77 @@
+.detail-page{
+    background-color: #0a1120;
+}
+
+.detail-top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.profile-top{
+    border: 2px solid #d8dee9;
+    padding: 0 10px 0 15px;
+    border-radius: 16px;
+    align-content: center;
+}
+.logo-top{
+    margin-left: 80px;
+}
+.game-detail-divs{
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid #d8dee9;
+    border-radius: 16px;
+
+}
+
+.capa{
+    margin-left: 80px;
+    width: 600px;
+    max-width: 600px;
+    height: 720px;
+    text-align: center;
+    align-content: center;
+    color: white;
+    border: 2px solid #d8dee9;
+    border-radius: 16px;
+    overflow: hidden;
+
+}
+.game-stats{
+    min-width: 600px;
+    min-height: 720px;
+    color: white;
+    border: 2px solid #d8dee9;
+    border-radius: 16px;
+    text-align: center;
+    align-content: center;
+}
+.game-details{
+    margin-right: 50px;
+    min-width: 600px;
+    border: 2px solid #d8dee9;
+    border-radius: 16px;
+}
+.buttons-detail-page{
+    min-height: 50px;
+    background-color: #bfc0c1;
+    color: #FFFFFF;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: normal;
+    border: 2px solid #d8dee9;
+}
+.buttons-line{
+    border: 2px solid #d8dee9;
+    border-radius: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-right:120px;
+
+}
 
